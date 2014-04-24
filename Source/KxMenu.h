@@ -86,4 +86,7 @@
 + (void) setMenuMargin:(CGSize) margin;
 + (CGSize) menuMargin;
 
++ (void) setEnableLineGradient:(BOOL) enable;
++ (BOOL) enableLineGradient;
+
 @end

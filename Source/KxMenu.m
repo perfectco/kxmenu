@@ -590,14 +590,26 @@ typedef enum {
 
     const CGFloat R = 0.44f, G = 0.44f, B = 0.44f;
 
-    const CGFloat components[20] = {
-      R,G,B,0.1,
-      R,G,B,0.4,
-      R,G,B,0.7,
-      R,G,B,0.4,
-      R,G,B,0.1
-    };
-    return [self gradientImageWithSize:size locations:locations components:components count:5];
+    if ([KxMenu enableLineGradient])
+    {
+      const CGFloat components[20] = {
+        R,G,B,0.1,
+        R,G,B,0.4,
+        R,G,B,0.7,
+        R,G,B,0.4,
+        R,G,B,0.1
+      };
+      return [self gradientImageWithSize:size locations:locations components:components count:5];
+    } else {
+      const CGFloat components[20] = {
+        R,G,B,1.0,
+        R,G,B,1.0,
+        R,G,B,1.0,
+        R,G,B,1.0,
+        R,G,B,1.0
+      };
+      return [self gradientImageWithSize:size locations:locations components:components count:5];
+    }
 }
 
 + (UIImage *) gradientImageWithSize:(CGSize) size
@@ -789,7 +801,8 @@ static UIColor* gBackgroundStart;
 static UIColor* gBackgroundEnd;
 static CGFloat gItemVerticalMargin = 0.0;
 static CGFloat gLineMargin = 10.0;
-static CGSize gMenuMargin = {10.0, 5.0}; //CGSizeMake(10.0, 5);
+static CGSize gMenuMargin = {10.0, 5.0};
+static BOOL gEnableLineGradient = TRUE;
 
 @implementation KxMenu {
 
@@ -982,6 +995,16 @@ static CGSize gMenuMargin = {10.0, 5.0}; //CGSizeMake(10.0, 5);
 + (CGSize) menuMargin
 {
   return gMenuMargin;
+}
+
++ (void) setEnableLineGradient:(BOOL) enable
+{
+  gEnableLineGradient = enable;
+}
+
++ (BOOL) enableLineGradient
+{
+  return gEnableLineGradient;
 }
 
 @end

@@ -183,6 +183,7 @@
     [KxMenu setMenuMargin:CGSizeMake(10, 0)];
     [KxMenu setItemVerticalMargin:24];
     [KxMenu setLineMargin:0];
+    [KxMenu setEnableLineGradient:false];
     [KxMenu showMenuInView:self.view
                   fromRect:sender.frame
                  menuItems:menuItems];
