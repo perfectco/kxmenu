@@ -158,6 +158,7 @@ typedef enum {
     CGFloat                     _arrowPosition;
     UIView                      *_contentView;
     NSArray                     *_menuItems;
+    KxDismissBlock              _dismissBlock;
 }
 
 - (id)init
@@ -209,7 +210,7 @@ typedef enum {
 
         _arrowDirection = KxMenuViewArrowDirectionUp;
         CGPoint point = (CGPoint){
-            rectXM - widthHalf,
+            rectX0,
             rectY1
         };
 
@@ -234,7 +235,7 @@ typedef enum {
 
         _arrowDirection = KxMenuViewArrowDirectionDown;
         CGPoint point = (CGPoint){
-            rectXM - widthHalf,
+            rectX0,
             rectY0 - heightPlusArrow
         };
 
@@ -318,9 +319,10 @@ typedef enum {
 - (void)showMenuInView:(UIView *)view
               fromRect:(CGRect)rect
              menuItems:(NSArray *)menuItems
+              onDismiss:(void (^)())dismissBlock
 {
     _menuItems = menuItems;
-
+    _dismissBlock = dismissBlock;
     _contentView = [self mkContentView];
     [self addSubview:_contentView];
 
@@ -334,7 +336,7 @@ typedef enum {
     const CGRect toFrame = self.frame;
     self.frame = (CGRect){self.arrowPoint, 1, 1};
 
-    [UIView animateWithDuration:0.2
+    [UIView animateWithDuration:0.1
                      animations:^(void) {
 
                          self.alpha = 1.0f;
@@ -355,7 +357,7 @@ typedef enum {
             _contentView.hidden = YES;
             const CGRect toFrame = (CGRect){self.arrowPoint, 1, 1};
 
-            [UIView animateWithDuration:0.2
+            [UIView animateWithDuration:0.1
                              animations:^(void) {
 
                                  self.alpha = 0;
@@ -375,6 +377,8 @@ typedef enum {
             [self removeFromSuperview];
         }
     }
+    if (_dismissBlock)
+      _dismissBlock();
 }
 
 - (void)performAction:(id)sender
@@ -840,6 +844,7 @@ static BOOL gEnableLineGradient = TRUE;
 - (void) showMenuInView:(UIView *)view
                fromRect:(CGRect)rect
               menuItems:(NSArray *)menuItems
+              onDismiss:(void (^)())dismissBlock
 {
     NSParameterAssert(view);
     NSParameterAssert(menuItems.count);
@@ -862,7 +867,18 @@ static BOOL gEnableLineGradient = TRUE;
 
 
     _menuView = [[KxMenuView alloc] init];
-    [_menuView showMenuInView:view fromRect:rect menuItems:menuItems];
+    [_menuView showMenuInView:view fromRect:rect menuItems:menuItems onDismiss:dismissBlock];
+}
+
++ (void) showMenuFromView:(UIView *)view
+                menuItems:(NSArray *)menuItems
+                onDismiss:(KxDismissBlock) dismissBlock;
+{
+  UIView* topView = view;
+  while (![topView.superview isKindOfClass:[UIWindow class]])
+    topView = topView.superview;
+  CGRect r = [topView convertRect:view.frame fromView:view.superview];
+  [KxMenu showMenuInView:topView fromRect:r menuItems:menuItems onDismiss:dismissBlock];
 }
 
 - (void) dismissMenu
@@ -888,8 +904,9 @@ static BOOL gEnableLineGradient = TRUE;
 + (void) showMenuInView:(UIView *)view
                fromRect:(CGRect)rect
               menuItems:(NSArray *)menuItems
+              onDismiss:(KxDismissBlock)dismissBlock
 {
-    [[self sharedMenu] showMenuInView:view fromRect:rect menuItems:menuItems];
+    [[self sharedMenu] showMenuInView:view fromRect:rect menuItems:menuItems onDismiss:dismissBlock];
 }
 
 + (void) dismissMenu
