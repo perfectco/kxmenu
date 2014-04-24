@@ -70,4 +70,7 @@
 + (void) setRoundedRect:(BOOL) rounded;
 + (BOOL) roundedRect;
 
++ (void) setShadowed:(BOOL) shadow;
++ (BOOL) shadowed;
+
 @end

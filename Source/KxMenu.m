@@ -168,10 +168,13 @@ typedef enum {
         self.backgroundColor = [UIColor clearColor];
         self.opaque = YES;
         self.alpha = 0;
-        
-        self.layer.shadowOpacity = 0.5;
-        self.layer.shadowOffset = CGSizeMake(2, 2);
-        self.layer.shadowRadius = 2;
+      
+        if ([KxMenu shadowed])
+        {
+          self.layer.shadowOpacity = 0.5;
+          self.layer.shadowOffset = CGSizeMake(2, 2);
+          self.layer.shadowRadius = 2;
+        }
     }
     
     return self;
@@ -773,6 +776,7 @@ static UIColor *gTintColor;
 static UIFont *gTitleFont;
 static BOOL gDisplayArrow;
 static BOOL gRoundedRect;
+static BOOL gShadowed;
 
 @implementation KxMenu {
     
@@ -909,6 +913,16 @@ static BOOL gRoundedRect;
 + (BOOL) roundedRect
 {
   return gRoundedRect;
+}
+
++ (void) setShadowed:(BOOL) shadow
+{
+  gShadowed = false;
+}
+
++ (BOOL) shadowed
+{
+  return gShadowed;
 }
 
 @end
