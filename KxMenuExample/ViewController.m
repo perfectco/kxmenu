@@ -179,6 +179,10 @@
     [KxMenu setRoundedRect:false];
     UIColor* c = [UIColor colorWithRed:54.0/255.0 green:54.0/255.0 blue:54.0/255.0 alpha:1.0];
     [KxMenu setBackgroundGradientStart:c andEnd:c];
+    [KxMenu setTitleFont:[UIFont systemFontOfSize:32]];
+    [KxMenu setMenuMargin:CGSizeMake(10, 0)];
+    [KxMenu setItemVerticalMargin:24];
+    [KxMenu setLineMargin:0];
     [KxMenu showMenuInView:self.view
                   fromRect:sender.frame
                  menuItems:menuItems];
