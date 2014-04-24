@@ -64,4 +64,6 @@
 + (UIFont *) titleFont;
 + (void) setTitleFont: (UIFont *) titleFont;
 
++ (void) setDisplayArrow:(BOOL) display;
++ (BOOL) displayArrow;
 @end

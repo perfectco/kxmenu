@@ -193,9 +193,10 @@ typedef enum {
     const CGFloat rectY0 = fromRect.origin.y;
     const CGFloat rectY1 = fromRect.origin.y + fromRect.size.height;
     const CGFloat rectYM = fromRect.origin.y + fromRect.size.height * 0.5f;;
-    
-    const CGFloat widthPlusArrow = contentSize.width + kArrowSize;
-    const CGFloat heightPlusArrow = contentSize.height + kArrowSize;
+  
+    const CGFloat arrowSize = [KxMenu displayArrow] ? kArrowSize : 0;
+    const CGFloat widthPlusArrow = contentSize.width + arrowSize;
+    const CGFloat heightPlusArrow = contentSize.height + arrowSize;
     const CGFloat widthHalf = contentSize.width * 0.5f;
     const CGFloat heightHalf = contentSize.height * 0.5f;
     
@@ -217,13 +218,13 @@ typedef enum {
         
         _arrowPosition = rectXM - point.x;
         //_arrowPosition = MAX(16, MIN(_arrowPosition, contentSize.width - 16));        
-        _contentView.frame = (CGRect){0, kArrowSize, contentSize};
+        _contentView.frame = (CGRect){0, arrowSize, contentSize};
                 
         self.frame = (CGRect) {
             
             point,
             contentSize.width,
-            contentSize.height + kArrowSize
+            contentSize.height + arrowSize
         };
         
     } else if (heightPlusArrow < rectY0) {
@@ -247,7 +248,7 @@ typedef enum {
             
             point,
             contentSize.width,
-            contentSize.height + kArrowSize
+            contentSize.height + arrowSize
         };
         
     } else if (widthPlusArrow < (outerWidth - rectX1)) {
@@ -265,12 +266,12 @@ typedef enum {
             point.y = outerHeight - contentSize.height - kMargin;
         
         _arrowPosition = rectYM - point.y;
-        _contentView.frame = (CGRect){kArrowSize, 0, contentSize};
+        _contentView.frame = (CGRect){arrowSize, 0, contentSize};
         
         self.frame = (CGRect) {
             
             point,
-            contentSize.width + kArrowSize,
+            contentSize.width + arrowSize,
             contentSize.height
         };
         
@@ -294,7 +295,7 @@ typedef enum {
         self.frame = (CGRect) {
             
             point,
-            contentSize.width  + kArrowSize,
+            contentSize.width  + arrowSize,
             contentSize.height
         };
         
@@ -640,83 +641,85 @@ typedef enum {
     CGFloat Y1 = frame.origin.y + frame.size.height;
     
     // render arrow
-    
-    UIBezierPath *arrowPath = [UIBezierPath bezierPath];
-    
-    // fix the issue with gap of arrow's base if on the edge
-    const CGFloat kEmbedFix = 3.f;
-    
-    if (_arrowDirection == KxMenuViewArrowDirectionUp) {
-        
-        const CGFloat arrowXM = _arrowPosition;
-        const CGFloat arrowX0 = arrowXM - kArrowSize;
-        const CGFloat arrowX1 = arrowXM + kArrowSize;
-        const CGFloat arrowY0 = Y0;
-        const CGFloat arrowY1 = Y0 + kArrowSize + kEmbedFix;
-        
-        [arrowPath moveToPoint:    (CGPoint){arrowXM, arrowY0}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY1}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX0, arrowY1}];
-        [arrowPath addLineToPoint: (CGPoint){arrowXM, arrowY0}];
-        
-        [[UIColor colorWithRed:R0 green:G0 blue:B0 alpha:1] set];
-        
-        Y0 += kArrowSize;
-        
-    } else if (_arrowDirection == KxMenuViewArrowDirectionDown) {
-        
-        const CGFloat arrowXM = _arrowPosition;
-        const CGFloat arrowX0 = arrowXM - kArrowSize;
-        const CGFloat arrowX1 = arrowXM + kArrowSize;
-        const CGFloat arrowY0 = Y1 - kArrowSize - kEmbedFix;
-        const CGFloat arrowY1 = Y1;
-        
-        [arrowPath moveToPoint:    (CGPoint){arrowXM, arrowY1}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY0}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX0, arrowY0}];
-        [arrowPath addLineToPoint: (CGPoint){arrowXM, arrowY1}];
-        
-        [[UIColor colorWithRed:R1 green:G1 blue:B1 alpha:1] set];
-        
-        Y1 -= kArrowSize;
-        
-    } else if (_arrowDirection == KxMenuViewArrowDirectionLeft) {
-        
-        const CGFloat arrowYM = _arrowPosition;        
-        const CGFloat arrowX0 = X0;
-        const CGFloat arrowX1 = X0 + kArrowSize + kEmbedFix;
-        const CGFloat arrowY0 = arrowYM - kArrowSize;;
-        const CGFloat arrowY1 = arrowYM + kArrowSize;
-        
-        [arrowPath moveToPoint:    (CGPoint){arrowX0, arrowYM}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY0}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY1}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX0, arrowYM}];
-        
-        [[UIColor colorWithRed:R0 green:G0 blue:B0 alpha:1] set];
-        
-        X0 += kArrowSize;
-        
-    } else if (_arrowDirection == KxMenuViewArrowDirectionRight) {
-        
-        const CGFloat arrowYM = _arrowPosition;        
-        const CGFloat arrowX0 = X1;
-        const CGFloat arrowX1 = X1 - kArrowSize - kEmbedFix;
-        const CGFloat arrowY0 = arrowYM - kArrowSize;;
-        const CGFloat arrowY1 = arrowYM + kArrowSize;
-        
-        [arrowPath moveToPoint:    (CGPoint){arrowX0, arrowYM}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY0}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY1}];
-        [arrowPath addLineToPoint: (CGPoint){arrowX0, arrowYM}];
-        
-        [[UIColor colorWithRed:R1 green:G1 blue:B1 alpha:1] set];
-        
-        X1 -= kArrowSize;
+    if ([KxMenu displayArrow])
+    {
+      UIBezierPath *arrowPath = [UIBezierPath bezierPath];
+      
+      // fix the issue with gap of arrow's base if on the edge
+      const CGFloat kEmbedFix = 3.f;
+      
+      if (_arrowDirection == KxMenuViewArrowDirectionUp) {
+          
+          const CGFloat arrowXM = _arrowPosition;
+          const CGFloat arrowX0 = arrowXM - kArrowSize;
+          const CGFloat arrowX1 = arrowXM + kArrowSize;
+          const CGFloat arrowY0 = Y0;
+          const CGFloat arrowY1 = Y0 + kArrowSize + kEmbedFix;
+          
+          [arrowPath moveToPoint:    (CGPoint){arrowXM, arrowY0}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY1}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX0, arrowY1}];
+          [arrowPath addLineToPoint: (CGPoint){arrowXM, arrowY0}];
+          
+          [[UIColor colorWithRed:R0 green:G0 blue:B0 alpha:1] set];
+          
+          Y0 += kArrowSize;
+          
+      } else if (_arrowDirection == KxMenuViewArrowDirectionDown) {
+          
+          const CGFloat arrowXM = _arrowPosition;
+          const CGFloat arrowX0 = arrowXM - kArrowSize;
+          const CGFloat arrowX1 = arrowXM + kArrowSize;
+          const CGFloat arrowY0 = Y1 - kArrowSize - kEmbedFix;
+          const CGFloat arrowY1 = Y1;
+          
+          [arrowPath moveToPoint:    (CGPoint){arrowXM, arrowY1}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY0}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX0, arrowY0}];
+          [arrowPath addLineToPoint: (CGPoint){arrowXM, arrowY1}];
+          
+          [[UIColor colorWithRed:R1 green:G1 blue:B1 alpha:1] set];
+          
+          Y1 -= kArrowSize;
+          
+      } else if (_arrowDirection == KxMenuViewArrowDirectionLeft) {
+          
+          const CGFloat arrowYM = _arrowPosition;        
+          const CGFloat arrowX0 = X0;
+          const CGFloat arrowX1 = X0 + kArrowSize + kEmbedFix;
+          const CGFloat arrowY0 = arrowYM - kArrowSize;;
+          const CGFloat arrowY1 = arrowYM + kArrowSize;
+          
+          [arrowPath moveToPoint:    (CGPoint){arrowX0, arrowYM}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY0}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY1}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX0, arrowYM}];
+          
+          [[UIColor colorWithRed:R0 green:G0 blue:B0 alpha:1] set];
+          
+          X0 += kArrowSize;
+          
+      } else if (_arrowDirection == KxMenuViewArrowDirectionRight) {
+          
+          const CGFloat arrowYM = _arrowPosition;        
+          const CGFloat arrowX0 = X1;
+          const CGFloat arrowX1 = X1 - kArrowSize - kEmbedFix;
+          const CGFloat arrowY0 = arrowYM - kArrowSize;;
+          const CGFloat arrowY1 = arrowYM + kArrowSize;
+          
+          [arrowPath moveToPoint:    (CGPoint){arrowX0, arrowYM}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY0}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX1, arrowY1}];
+          [arrowPath addLineToPoint: (CGPoint){arrowX0, arrowYM}];
+          
+          [[UIColor colorWithRed:R1 green:G1 blue:B1 alpha:1] set];
+          
+          X1 -= kArrowSize;
+      }
+      
+      [arrowPath fill];
     }
-    
-    [arrowPath fill];
-
+  
     // render body
     
     const CGRect bodyFrame = {X0, Y0, X1 - X0, Y1 - Y0};
@@ -767,6 +770,7 @@ typedef enum {
 static KxMenu *gMenu;
 static UIColor *gTintColor;
 static UIFont *gTitleFont;
+static BOOL gDisplayArrow;
 
 @implementation KxMenu {
     
@@ -883,6 +887,16 @@ static UIFont *gTitleFont;
     if (titleFont != gTitleFont) {
         gTitleFont = titleFont;
     }
+}
+
++ (void) setDisplayArrow:(BOOL) display
+{
+  gDisplayArrow = display;
+}
+
++ (BOOL) displayArrow;
+{
+  return gDisplayArrow;
 }
 
 @end

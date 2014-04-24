@@ -44,6 +44,7 @@
     
     _btn1 = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _btn1.frame = CGRectMake(5, 5, 100, 50);
+    _btn1.backgroundColor = [UIColor redColor];
     [_btn1 setTitle:@"Click me" forState:UIControlStateNormal];
     [_btn1 addTarget:self action:@selector(showMenu:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_btn1];
@@ -148,7 +149,8 @@
     KxMenuItem *first = menuItems[0];
     first.foreColor = [UIColor colorWithRed:47/255.0f green:112/255.0f blue:225/255.0f alpha:1.0];
     first.alignment = NSTextAlignmentCenter;
-    
+  
+    [KxMenu setDisplayArrow:false];
     [KxMenu showMenuInView:self.view
                   fromRect:sender.frame
                  menuItems:menuItems];
