@@ -112,6 +112,7 @@
 
 - (void)showMenu:(UIButton *)sender
 {
+#if 0
     NSArray *menuItems =
     @[
       
@@ -145,12 +146,38 @@
                     target:self
                     action:@selector(pushMenuItem:)],
       ];
+#endif
+  NSArray *menuItems =
+  @[
+    [KxMenuItem menuItem:@"Share this"
+                   image:nil
+                  target:self
+                  action:@selector(pushMenuItem:)],
     
-    KxMenuItem *first = menuItems[0];
-    first.foreColor = [UIColor colorWithRed:47/255.0f green:112/255.0f blue:225/255.0f alpha:1.0];
-    first.alignment = NSTextAlignmentCenter;
+    [KxMenuItem menuItem:@"Check this menu"
+                   image:nil
+                  target:self
+                  action:@selector(pushMenuItem:)],
+    
+    [KxMenuItem menuItem:@"Reload page"
+                   image:nil
+                  target:self
+                  action:@selector(pushMenuItem:)],
+    
+    [KxMenuItem menuItem:@"Search"
+                   image:nil
+                  target:self
+                  action:@selector(pushMenuItem:)],
+    
+    [KxMenuItem menuItem:@"Go home"
+                   image:nil
+                  target:self
+                  action:@selector(pushMenuItem:)],
+    ];
   
     [KxMenu setDisplayArrow:false];
+    [KxMenu setRoundedRect:false];
+  
     [KxMenu showMenuInView:self.view
                   fromRect:sender.frame
                  menuItems:menuItems];

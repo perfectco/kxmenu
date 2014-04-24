@@ -724,9 +724,10 @@ typedef enum {
     
     const CGRect bodyFrame = {X0, Y0, X1 - X0, Y1 - Y0};
     
-    UIBezierPath *borderPath = [UIBezierPath bezierPathWithRoundedRect:bodyFrame
-                                                          cornerRadius:8];
-        
+    UIBezierPath *borderPath = [KxMenu roundedRect] ?
+      [UIBezierPath bezierPathWithRoundedRect:bodyFrame cornerRadius:8] :
+      [UIBezierPath bezierPathWithRect:bodyFrame];
+  
     const CGFloat locations[] = {0, 1};
     const CGFloat components[] = {
         R0, G0, B0, 1,
@@ -771,6 +772,7 @@ static KxMenu *gMenu;
 static UIColor *gTintColor;
 static UIFont *gTitleFont;
 static BOOL gDisplayArrow;
+static BOOL gRoundedRect;
 
 @implementation KxMenu {
     
@@ -897,6 +899,16 @@ static BOOL gDisplayArrow;
 + (BOOL) displayArrow;
 {
   return gDisplayArrow;
+}
+
++ (void) setRoundedRect:(BOOL) rounded;
+{
+  gRoundedRect = rounded;
+}
+
++ (BOOL) roundedRect
+{
+  return gRoundedRect;
 }
 
 @end

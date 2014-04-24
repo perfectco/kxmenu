@@ -66,4 +66,8 @@
 
 + (void) setDisplayArrow:(BOOL) display;
 + (BOOL) displayArrow;
+
++ (void) setRoundedRect:(BOOL) rounded;
++ (BOOL) roundedRect;
+
 @end
