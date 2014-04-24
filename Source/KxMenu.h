@@ -73,4 +73,8 @@
 + (void) setShadowed:(BOOL) shadow;
 + (BOOL) shadowed;
 
++ (void) setBackgroundGradientStart:(UIColor*) startColor andEnd:(UIColor*) endColor;
++ (UIColor*) getBackgroundGradientStart;
++ (UIColor*) getBackgroundGradientEnd;
+
 @end

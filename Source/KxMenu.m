@@ -628,9 +628,17 @@ typedef enum {
 - (void)drawBackground:(CGRect)frame
              inContext:(CGContextRef) context
 {
+  
     CGFloat R0 = 0.267, G0 = 0.303, B0 = 0.335;
     CGFloat R1 = 0.040, G1 = 0.040, B1 = 0.040;
-    
+  
+    if ([KxMenu getBackgroundGradientStart])
+    {
+      CGFloat a;
+      [[KxMenu getBackgroundGradientStart] getRed:&R0 green:&G0 blue:&B0 alpha:&a];
+      [[KxMenu getBackgroundGradientEnd] getRed:&R1 green:&G1 blue:&B1 alpha:&a];
+    }
+  
     UIColor *tintColor = [KxMenu tintColor];
     if (tintColor) {
         
@@ -777,6 +785,8 @@ static UIFont *gTitleFont;
 static BOOL gDisplayArrow;
 static BOOL gRoundedRect;
 static BOOL gShadowed;
+static UIColor* gBackgroundStart;
+static UIColor* gBackgroundEnd;
 
 @implementation KxMenu {
     
@@ -923,6 +933,22 @@ static BOOL gShadowed;
 + (BOOL) shadowed
 {
   return gShadowed;
+}
+
++ (void) setBackgroundGradientStart:(UIColor*) startColor andEnd:(UIColor*) endColor
+{
+  gBackgroundStart = startColor;
+  gBackgroundEnd = endColor;
+}
+
++ (UIColor*) getBackgroundGradientStart
+{
+  return gBackgroundStart;
+}
+
++ (UIColor*) getBackgroundGradientEnd
+{
+  return gBackgroundEnd;
 }
 
 @end
