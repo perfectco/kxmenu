@@ -201,7 +201,7 @@ typedef enum {
     const CGFloat arrowSize = [KxMenu displayArrow] ? kArrowSize : 0;
     const CGFloat widthPlusArrow = contentSize.width + arrowSize;
     const CGFloat heightPlusArrow = contentSize.height + arrowSize;
-    const CGFloat widthHalf = contentSize.width * 0.5f;
+    //const CGFloat widthHalf = contentSize.width * 0.5f;
     const CGFloat heightHalf = contentSize.height * 0.5f;
 
     const CGFloat kMargin = 5.f;
