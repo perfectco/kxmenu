@@ -512,7 +512,7 @@ typedef enum {
             titleLabel.text = menuItem.title;
             titleLabel.font = titleFont;
             titleLabel.textAlignment = menuItem.alignment;
-            titleLabel.textColor = menuItem.foreColor ? menuItem.foreColor : [UIColor whiteColor];
+            titleLabel.textColor = menuItem.foreColor ? menuItem.foreColor : [KxMenu defaultForegroundColor];
             titleLabel.backgroundColor = [UIColor clearColor];
             titleLabel.autoresizingMask = UIViewAutoresizingNone;
             //titleLabel.backgroundColor = [UIColor greenColor];
@@ -807,6 +807,7 @@ static CGFloat gItemVerticalMargin = 0.0;
 static CGFloat gLineMargin = 10.0;
 static CGSize gMenuMargin = {10.0, 5.0};
 static BOOL gEnableLineGradient = TRUE;
+static UIColor* gDefaultForegroundColor;
 
 @implementation KxMenu {
 
@@ -1022,6 +1023,14 @@ static BOOL gEnableLineGradient = TRUE;
 + (BOOL) enableLineGradient
 {
   return gEnableLineGradient;
+}
+
++ (void) setDefaultForegroundColor:(UIColor*)color {
+  gDefaultForegroundColor = color;
+}
+
++ (UIColor*) defaultForegroundColor {
+  return gDefaultForegroundColor ? gDefaultForegroundColor : [UIColor whiteColor];
 }
 
 @end

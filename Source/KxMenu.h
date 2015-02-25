@@ -96,4 +96,8 @@ typedef void (^KxDismissBlock)();
 + (void) setEnableLineGradient:(BOOL) enable;
 + (BOOL) enableLineGradient;
 
++ (void) setDefaultForegroundColor:(UIColor*)color;
++ (UIColor*) defaultForegroundColor;
+
+
 @end
