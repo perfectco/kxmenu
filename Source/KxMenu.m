@@ -441,7 +441,7 @@ typedef enum {
     maxItemWidth  = MAX(maxItemWidth, kMinMenuItemWidth);
     maxItemHeight = MAX(maxItemHeight + [KxMenu itemVerticalMargin], kMinMenuItemHeight);
 
-    const CGFloat titleX = kMarginX * 2 + maxImageWidth;
+    const CGFloat titleX = kMarginX * 2;
     const CGFloat titleWidth = maxItemWidth - titleX - kMarginX * 2;
 
     UIImage *selectedImage = [KxMenuView selectedImage:(CGSize){maxItemWidth, maxItemHeight + 2}];
@@ -520,13 +520,19 @@ typedef enum {
         }
 
         if (menuItem.image) {
+            //const CGRect imageFrame = {x, y, maxImageWidth, maxItemHeight - kMarginY * 2};
+            const CGSize size = menuItem.image.size;
 
-            const CGRect imageFrame = {kMarginX * 2, kMarginY, maxImageWidth, maxItemHeight - kMarginY * 2};
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:imageFrame];
-            imageView.image = menuItem.image;
-            imageView.clipsToBounds = YES;
-            imageView.contentMode = UIViewContentModeCenter;
+            CGFloat x = kMarginX + titleWidth + (maxImageWidth - size.width) / 2;
+            CGFloat y = kMarginY + (maxItemHeight - size.height) / 2;
+            const CGRect imageFrame = {x, y, size.height, size.width};
+            //UIImageView *imageView = [[UIImageView alloc] initWithFrame:imageFrame];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:menuItem.image];
+            //imageView.image = menuItem.image;
+            imageView.clipsToBounds = NO;
+            //imageView.contentMode = UIViewContentModeCenter;
             imageView.autoresizingMask = UIViewAutoresizingNone;
+            imageView.frame = imageFrame;
             [itemView addSubview:imageView];
         }
 
