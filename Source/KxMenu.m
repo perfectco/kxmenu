@@ -526,12 +526,12 @@ typedef enum {
             CGFloat x = kMarginX + titleWidth + (maxImageWidth - size.width) / 2;
             CGFloat y = kMarginY + (maxItemHeight - size.height) / 2;
             const CGRect imageFrame = {x, y, size.height, size.width};
-            //UIImageView *imageView = [[UIImageView alloc] initWithFrame:imageFrame];
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:menuItem.image];
-            //imageView.image = menuItem.image;
-            imageView.clipsToBounds = NO;
-            //imageView.contentMode = UIViewContentModeCenter;
-            imageView.autoresizingMask = UIViewAutoresizingNone;
+
+            UIImageView *imageView = [[UIImageView alloc] init];
+            imageView.clipsToBounds = YES;
+            imageView.contentMode = UIViewContentModeScaleAspectFit;
+            //imageView.autoresizingMask = UIViewAutoresizingNone;
+            imageView.image = menuItem.image;
             imageView.frame = imageFrame;
             [itemView addSubview:imageView];
         }
