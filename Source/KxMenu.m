@@ -159,6 +159,7 @@ typedef enum {
     UIView                      *_contentView;
     NSArray                     *_menuItems;
     KxDismissBlock              _dismissBlock;
+    BOOL _dismissRequested;
 }
 
 - (id)init
@@ -350,6 +351,7 @@ typedef enum {
 
 - (void)dismissMenu:(BOOL) animated
 {
+  _dismissRequested = YES;
     if (self.superview) {
 
         if (animated) {
@@ -383,8 +385,11 @@ typedef enum {
 
 - (void)performAction:(id)sender
 {
-    [self dismissMenu:YES];
+  if (_dismissRequested)
+    return;
 
+    [self dismissMenu:YES];
+  
     UIButton *button = (UIButton *)sender;
     KxMenuItem *menuItem = _menuItems[button.tag];
     [menuItem performAction];
