@@ -38,6 +38,7 @@
 
 #import "KxMenu.h"
 #import <QuartzCore/QuartzCore.h>
+@import CoreGraphics;
 
 const CGFloat kArrowSize = 12.f;
 
@@ -173,9 +174,8 @@ typedef enum {
 
         if ([KxMenu shadowed])
         {
-          self.layer.shadowOpacity = 0.5;
-          self.layer.shadowOffset = CGSizeMake(2, 2);
-          self.layer.shadowRadius = 2;
+            self.layer.shadowOpacity=0.7;
+            self.layer.shadowRadius=100;
         }
     }
 
@@ -328,20 +328,33 @@ typedef enum {
     [self addSubview:_contentView];
 
     [self setupFrameInView:view fromRect:rect];
+  
+  //const CGRect dimRect=CGRectInset(self.frame, -50,-50);
+  //CGRect *dimRect=
+  //UIView *dimmingView=[[UIView alloc] initWithFrame:dimRect];
+  //dimmingView.alpha=0.1;
+  //dimmingView.backgroundColor=[UIColor blackColor];
+  NSLog(@"%@",_contentView.frame);
+  //#dimmingView.id=1111;
+  
+  
 
     KxMenuOverlay *overlay = [[KxMenuOverlay alloc] initWithFrame:view.bounds];
-    [overlay addSubview:self];
+  //[overlay addSubview:dimmingView];
+  [overlay addSubview:self];
     [view addSubview:overlay];
 
     _contentView.hidden = YES;
     const CGRect toFrame = self.frame;
     self.frame = (CGRect){self.arrowPoint, 1, 1};
+  //dimmingView.frame=self.frame;
 
     [UIView animateWithDuration:0.1
                      animations:^(void) {
 
                          self.alpha = 1.0f;
                          self.frame = toFrame;
+                       //dimmingView.frame= dimRect;
 
                      } completion:^(BOOL completed) {
                          _contentView.hidden = NO;
@@ -370,6 +383,7 @@ typedef enum {
                                  if ([self.superview isKindOfClass:[KxMenuOverlay class]])
                                      [self.superview removeFromSuperview];
                                  [self removeFromSuperview];
+                               
                              }];
 
         } else {
@@ -972,7 +986,7 @@ static UIColor* gDefaultForegroundColor;
 
 + (void) setShadowed:(BOOL) shadow
 {
-  gShadowed = false;
+  gShadowed = shadow;
 }
 
 + (BOOL) shadowed
