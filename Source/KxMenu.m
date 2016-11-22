@@ -161,6 +161,7 @@ typedef enum {
     NSArray                     *_menuItems;
     KxDismissBlock              _dismissBlock;
     BOOL _dismissRequested;
+    UIView *_dimView;
 }
 
 - (id)init
@@ -322,40 +323,43 @@ typedef enum {
              menuItems:(NSArray *)menuItems
               onDismiss:(void (^)())dismissBlock
 {
-    _menuItems = menuItems;
-    _dismissBlock = dismissBlock;
-    _contentView = [self mkContentView];
-    [self addSubview:_contentView];
+  _menuItems = menuItems;
+  _dismissBlock = dismissBlock;
+  _contentView = [self mkContentView];
+  [self addSubview:_contentView];
 
-    [self setupFrameInView:view fromRect:rect];
+  [self setupFrameInView:view fromRect:rect];
   
-  //const CGRect dimRect=CGRectInset(self.frame, -50,-50);
-  //CGRect *dimRect=
-  //UIView *dimmingView=[[UIView alloc] initWithFrame:dimRect];
-  //dimmingView.alpha=0.1;
-  //dimmingView.backgroundColor=[UIColor blackColor];
-  NSLog(@"%@",_contentView.frame);
-  //#dimmingView.id=1111;
+  //show hide dimmed background view
+  if(_dimView){
+    [_dimView setHidden:NO];
+  } else {
+    _dimView = [[UIView alloc] initWithFrame:view.window.frame];
+    _dimView.backgroundColor = [UIColor blackColor];
+    _dimView.alpha = 0.0f;
+    _dimView.userInteractionEnabled = NO;
+    [view addSubview:_dimView];
+  }
   
+  [UIView animateWithDuration:0.1
+                   animations:^(void) {
+                     _dimView.alpha = 0.66;
+                   } completion:^(BOOL completed) {
+                   }];
   
 
-    KxMenuOverlay *overlay = [[KxMenuOverlay alloc] initWithFrame:view.bounds];
-  //[overlay addSubview:dimmingView];
+  KxMenuOverlay *overlay = [[KxMenuOverlay alloc] initWithFrame:view.bounds];
   [overlay addSubview:self];
     [view addSubview:overlay];
 
     _contentView.hidden = YES;
     const CGRect toFrame = self.frame;
     self.frame = (CGRect){self.arrowPoint, 1, 1};
-  //dimmingView.frame=self.frame;
 
     [UIView animateWithDuration:0.1
                      animations:^(void) {
-
                          self.alpha = 1.0f;
                          self.frame = toFrame;
-                       //dimmingView.frame= dimRect;
-
                      } completion:^(BOOL completed) {
                          _contentView.hidden = NO;
                      }];
@@ -364,6 +368,16 @@ typedef enum {
 
 - (void)dismissMenu:(BOOL) animated
 {
+  
+  
+  [UIView animateWithDuration:0.1
+                   animations:^(void) {
+                     _dimView.alpha = 0.0;
+                   } completion:^(BOOL completed) {
+                     [_dimView setHidden:YES];
+                   }];
+  
+  
   _dismissRequested = YES;
     if (self.superview) {
 
@@ -781,7 +795,7 @@ typedef enum {
     const CGRect bodyFrame = {X0, Y0, X1 - X0, Y1 - Y0};
 
     UIBezierPath *borderPath = [KxMenu roundedRect] ?
-      [UIBezierPath bezierPathWithRoundedRect:bodyFrame cornerRadius:8] :
+      [UIBezierPath bezierPathWithRoundedRect:bodyFrame cornerRadius:[KxMenu cornerRadius]] :
       [UIBezierPath bezierPathWithRect:bodyFrame];
 
     const CGFloat locations[] = {0, 1};
@@ -834,6 +848,7 @@ static UIColor* gBackgroundStart;
 static UIColor* gBackgroundEnd;
 static CGFloat gItemVerticalMargin = 0.0;
 static CGFloat gLineMargin = 10.0;
+static CGFloat gCornerRadius = 8.0;
 static CGSize gMenuMargin = {10.0, 5.0};
 static BOOL gEnableLineGradient = TRUE;
 static UIColor* gDefaultForegroundColor;
@@ -905,12 +920,14 @@ static UIColor * gDividerForegroundColor;
                 menuItems:(NSArray *)menuItems
                 onDismiss:(KxDismissBlock) dismissBlock;
 {
+ 
   UIView* topView = view;
   while (![topView.superview isKindOfClass:[UIWindow class]])
     topView = topView.superview;
   CGRect r = [topView convertRect:view.frame fromView:view.superview];
   [KxMenu showMenuInView:topView fromRect:r menuItems:menuItems onDismiss:dismissBlock];
 }
+
 
 - (void) dismissMenu
 {
@@ -1066,6 +1083,7 @@ static UIColor * gDividerForegroundColor;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> e446d49... add back line routine
@@ -1079,6 +1097,8 @@ static UIColor * gDividerForegroundColor;
 =======
 >>>>>>> 8814ed3... fix kxmenu
 
+=======
+>>>>>>> 29c1793... add new kxmenu properties
 + (void) setCornerRadius:(CGFloat)radius
 {
   gCornerRadius = radius;
@@ -1089,5 +1109,8 @@ static UIColor * gDividerForegroundColor;
 }
 
 
+<<<<<<< HEAD
 >>>>>>> e446d49... add back line routine
+=======
+>>>>>>> 29c1793... add new kxmenu properties
 @end

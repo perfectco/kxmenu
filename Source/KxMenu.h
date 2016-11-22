@@ -101,6 +101,7 @@ typedef void (^KxDismissBlock)();
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 =======
@@ -111,4 +112,8 @@ typedef void (^KxDismissBlock)();
 + (void) setCornerRadius:(CGFloat) radius;
 + (CGFloat) cornerRadius;
 >>>>>>> e446d49... add back line routine
+=======
++ (void) setCornerRadius:(CGFloat) radius;
++ (CGFloat) cornerRadius;
+>>>>>>> 29c1793... add new kxmenu properties
 @end
