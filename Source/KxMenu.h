@@ -99,12 +99,27 @@ typedef void (^KxDismissBlock)();
 + (void) setDefaultForegroundColor:(UIColor*)color;
 + (UIColor*) defaultForegroundColor;
 
+/**
+ * Divider line color between menu sections
+ * @param color value
+ * @return UIColor value
+ */
 + (void) setDividerLineForegroundColor:(UIColor*)color;
 + (UIColor*) dividerLineForegroundColor;
 
+/**
+ * Sets corner radius for popup view
+ * @param radius value
+ * @return CGFloat radius value
+ */
 + (void) setCornerRadius:(CGFloat) radius;
 + (CGFloat) cornerRadius;
 
+/**
+ * Distance between popup and target view
+ * @param distance padding value
+ * @return CGFloat distance value
+ */
 + (void) setDistancePadding:(CGFloat)distance;
 + (CGFloat) distancePadding;
 
