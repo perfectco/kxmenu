@@ -570,11 +570,6 @@ typedef enum {
         }
 
         if (itemNum < _menuItems.count - 1) {
-
-//            UIImageView *gradientView = [[UIImageView alloc] initWithImage:gradientLine];
-//            gradientView.frame = (CGRect){kLineMarginX * 2, maxItemHeight + 1, gradientLine.size};
-//            gradientView.contentMode = UIViewContentModeLeft;
-//            [itemView addSubview:gradientView];
           
           UIView * lineView = [[UIView alloc] initWithFrame:(CGRect){kLineMarginX * 2, maxItemHeight + 1, gradientLine.size}];
           [lineView setBackgroundColor:[KxMenu dividerLineForegroundColor]];
@@ -788,6 +783,19 @@ typedef enum {
       }
 
       [arrowPath fill];
+    } else {
+      //add padding to popup
+      float padding = [KxMenu distancePadding];
+      if (_arrowDirection == KxMenuViewArrowDirectionUp) {
+        self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y + padding, self.frame.size.width, self.frame.size.height);
+      } else if (_arrowDirection == KxMenuViewArrowDirectionDown) {
+        self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y - padding, self.frame.size.width, self.frame.size.height);
+      } else if (_arrowDirection == KxMenuViewArrowDirectionLeft) {
+        self.frame = CGRectMake(self.frame.origin.x + padding, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
+      } else if (_arrowDirection == KxMenuViewArrowDirectionRight) {
+        self.frame = CGRectMake(self.frame.origin.x - padding, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
+      }
+      
     }
 
     // render body
@@ -849,6 +857,7 @@ static UIColor* gBackgroundEnd;
 static CGFloat gItemVerticalMargin = 0.0;
 static CGFloat gLineMargin = 10.0;
 static CGFloat gCornerRadius = 8.0;
+static CGFloat gDistancePadding = 20.0;
 static CGSize gMenuMargin = {10.0, 5.0};
 static BOOL gEnableLineGradient = TRUE;
 static UIColor* gDefaultForegroundColor;
@@ -1080,13 +1089,6 @@ static UIColor * gDividerForegroundColor;
   return gDefaultForegroundColor ? gDefaultForegroundColor : [UIColor whiteColor];
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> e446d49... add back line routine
 + (void) setDividerLineForegroundColor:(UIColor*)color{
   gDividerForegroundColor = color;
 }
@@ -1094,11 +1096,6 @@ static UIColor * gDividerForegroundColor;
   return gDividerForegroundColor ? gDividerForegroundColor : [UIColor blackColor];
 }
 
-=======
->>>>>>> 8814ed3... fix kxmenu
-
-=======
->>>>>>> 29c1793... add new kxmenu properties
 + (void) setCornerRadius:(CGFloat)radius
 {
   gCornerRadius = radius;
@@ -1108,9 +1105,13 @@ static UIColor * gDividerForegroundColor;
   return gCornerRadius;
 }
 
++ (void) setDistancePadding:(CGFloat)distance
+{
+  gDistancePadding = distance;
+}
 
-<<<<<<< HEAD
->>>>>>> e446d49... add back line routine
-=======
->>>>>>> 29c1793... add new kxmenu properties
++ (CGFloat) distancePadding{
+  return gDistancePadding;
+}
+
 @end

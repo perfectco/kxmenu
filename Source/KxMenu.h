@@ -99,21 +99,13 @@ typedef void (^KxDismissBlock)();
 + (void) setDefaultForegroundColor:(UIColor*)color;
 + (UIColor*) defaultForegroundColor;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-=======
->>>>>>> e446d49... add back line routine
 + (void) setDividerLineForegroundColor:(UIColor*)color;
 + (UIColor*) dividerLineForegroundColor;
 
 + (void) setCornerRadius:(CGFloat) radius;
 + (CGFloat) cornerRadius;
->>>>>>> e446d49... add back line routine
-=======
-+ (void) setCornerRadius:(CGFloat) radius;
-+ (CGFloat) cornerRadius;
->>>>>>> 29c1793... add new kxmenu properties
+
++ (void) setDistancePadding:(CGFloat)distance;
++ (CGFloat) distancePadding;
+
 @end
