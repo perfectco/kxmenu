@@ -1065,6 +1065,7 @@ static UIColor * gDividerForegroundColor;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> e446d49... add back line routine
@@ -1075,6 +1076,8 @@ static UIColor * gDividerForegroundColor;
   return gDividerForegroundColor ? gDividerForegroundColor : [UIColor blackColor];
 }
 
+=======
+>>>>>>> 8814ed3... fix kxmenu
 
 + (void) setCornerRadius:(CGFloat)radius
 {
