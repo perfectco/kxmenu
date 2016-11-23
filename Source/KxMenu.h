@@ -99,5 +99,13 @@ typedef void (^KxDismissBlock)();
 + (void) setDefaultForegroundColor:(UIColor*)color;
 + (UIColor*) defaultForegroundColor;
 
+<<<<<<< HEAD
 
+=======
++ (void) setDividerLineForegroundColor:(UIColor*)color;
++ (UIColor*) dividerLineForegroundColor;
+
++ (void) setCornerRadius:(CGFloat) radius;
++ (CGFloat) cornerRadius;
+>>>>>>> e446d49... add back line routine
 @end

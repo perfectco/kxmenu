@@ -557,11 +557,15 @@ typedef enum {
 
         if (itemNum < _menuItems.count - 1) {
 
-            UIImageView *gradientView = [[UIImageView alloc] initWithImage:gradientLine];
-            gradientView.frame = (CGRect){kLineMarginX * 2, maxItemHeight + 1, gradientLine.size};
-            gradientView.contentMode = UIViewContentModeLeft;
-            [itemView addSubview:gradientView];
-
+//            UIImageView *gradientView = [[UIImageView alloc] initWithImage:gradientLine];
+//            gradientView.frame = (CGRect){kLineMarginX * 2, maxItemHeight + 1, gradientLine.size};
+//            gradientView.contentMode = UIViewContentModeLeft;
+//            [itemView addSubview:gradientView];
+          
+          UIView * lineView = [[UIView alloc] initWithFrame:(CGRect){kLineMarginX * 2, maxItemHeight + 1, gradientLine.size}];
+          [lineView setBackgroundColor:[KxMenu dividerLineForegroundColor]];
+          [itemView addSubview:lineView];
+          
             itemY += 2;
         }
 
@@ -833,6 +837,7 @@ static CGFloat gLineMargin = 10.0;
 static CGSize gMenuMargin = {10.0, 5.0};
 static BOOL gEnableLineGradient = TRUE;
 static UIColor* gDefaultForegroundColor;
+static UIColor * gDividerForegroundColor;
 
 @implementation KxMenu {
 
@@ -1058,4 +1063,25 @@ static UIColor* gDefaultForegroundColor;
   return gDefaultForegroundColor ? gDefaultForegroundColor : [UIColor whiteColor];
 }
 
+<<<<<<< HEAD
+=======
++ (void) setDividerLineForegroundColor:(UIColor*)color{
+  gDividerForegroundColor = color;
+}
++ (UIColor*) dividerLineForegroundColor{
+  return gDividerForegroundColor ? gDividerForegroundColor : [UIColor blackColor];
+}
+
+
++ (void) setCornerRadius:(CGFloat)radius
+{
+  gCornerRadius = radius;
+}
+
++ (CGFloat) cornerRadius{
+  return gCornerRadius;
+}
+
+
+>>>>>>> e446d49... add back line routine
 @end
