@@ -1064,7 +1064,10 @@ static UIColor * gDividerForegroundColor;
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> e446d49... add back line routine
 + (void) setDividerLineForegroundColor:(UIColor*)color{
   gDividerForegroundColor = color;
 }

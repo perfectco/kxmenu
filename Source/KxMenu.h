@@ -100,8 +100,11 @@ typedef void (^KxDismissBlock)();
 + (UIColor*) defaultForegroundColor;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
+=======
+>>>>>>> e446d49... add back line routine
 + (void) setDividerLineForegroundColor:(UIColor*)color;
 + (UIColor*) dividerLineForegroundColor;
 
