@@ -46,6 +46,7 @@ const CGFloat kArrowSize = 12.f;
 ////////////////////////////////////////////////////////////////////////////////
 
 @interface KxMenuView : UIView
+
 @end
 
 @interface KxMenuOverlay : UIView
@@ -477,9 +478,6 @@ typedef enum {
     const CGFloat titleX = kMarginX * 2;
     const CGFloat titleWidth = maxItemWidth - titleX - kMarginX * 2;
 
-    UIImage *selectedImage = [KxMenuView selectedImage:(CGSize){maxItemWidth, maxItemHeight + 2}];
-    UIImage *gradientLine = [KxMenuView gradientLine: (CGSize){maxItemWidth - kLineMarginX * 4, 1}];
-
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectZero];
     contentView.autoresizingMask = UIViewAutoresizingNone;
     contentView.backgroundColor = [UIColor clearColor];
@@ -513,8 +511,8 @@ typedef enum {
                        action:@selector(performAction:)
              forControlEvents:UIControlEventTouchUpInside];
 
+            UIImage *selectedImage = [KxMenuView selectedImage:(CGSize){maxItemWidth, maxItemHeight + 2} menuItems:_menuItems itemTag:itemNum];
             [button setBackgroundImage:selectedImage forState:UIControlStateHighlighted];
-
             [itemView addSubview:button];
         }
 
@@ -541,7 +539,7 @@ typedef enum {
                 };
             }
 
-            UILabel *titleLabel = [[UILabel alloc] initWithFrame:titleFrame];
+             UILabel * titleLabel = [[UILabel alloc] initWithFrame:titleFrame];
             titleLabel.text = menuItem.title;
             titleLabel.font = titleFont;
             titleLabel.textAlignment = menuItem.alignment;
@@ -570,7 +568,7 @@ typedef enum {
         }
 
         if (itemNum < _menuItems.count - 1) {
-          
+          UIImage *gradientLine = [KxMenuView gradientLine: (CGSize){maxItemWidth - kLineMarginX * 4, 1} menuItems:_menuItems itemTag:itemNum];
           UIView * lineView = [[UIView alloc] initWithFrame:(CGRect){kLineMarginX * 2, maxItemHeight + 1, gradientLine.size}];
           [lineView setBackgroundColor:[KxMenu dividerLineForegroundColor]];
           [itemView addSubview:lineView];
@@ -616,17 +614,22 @@ typedef enum {
 }
 
 + (UIImage *) selectedImage: (CGSize) size
+                     menuItems:(NSArray *)menuItems
+                     itemTag:(int)tag
+
 {
     const CGFloat locations[] = {0,1};
     const CGFloat components[] = {
         0.216, 0.471, 0.871, 1,
         0.059, 0.353, 0.839, 1,
     };
-
-    return [self gradientImageWithSize:size locations:locations components:components count:2];
+  
+    return [self gradientImageWithSize:size locations:locations components:components count:2 menuItems:menuItems itemTag:tag];
 }
 
 + (UIImage *) gradientLine: (CGSize) size
+                 menuItems:(NSArray *)menuItems
+                   itemTag:(int)tag
 {
     const CGFloat locations[5] = {0,0.2,0.5,0.8,1};
 
@@ -641,7 +644,7 @@ typedef enum {
         R,G,B,0.4,
         R,G,B,0.1
       };
-      return [self gradientImageWithSize:size locations:locations components:components count:5];
+      return [self gradientImageWithSize:size locations:locations components:components count:5 menuItems:menuItems itemTag:tag];
     } else {
       const CGFloat components[20] = {
         R,G,B,1.0,
@@ -650,7 +653,7 @@ typedef enum {
         R,G,B,1.0,
         R,G,B,1.0
       };
-      return [self gradientImageWithSize:size locations:locations components:components count:5];
+      return [self gradientImageWithSize:size locations:locations components:components count:5 menuItems:menuItems itemTag:tag];
     }
 }
 
@@ -658,19 +661,53 @@ typedef enum {
                           locations:(const CGFloat []) locations
                          components:(const CGFloat []) components
                               count:(NSUInteger)count
+                          menuItems:(NSArray *)menuItems
+                            itemTag:(int)tag
 {
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+  
+  // Drawing with a white stroke color
+  CGContextRef context=UIGraphicsGetCurrentContext();
+  //CGContextSetRGBStrokeColor(context, 1.0, 1.0, 1.0, 1.0);//draws outline stroke if needed
+  CGContextSetFillColorWithColor(context, [KxMenu defaultForegroundColor].CGColor);
+  CGContextSetAlpha(context, 0.9);
+  
+  CGRect rrect = CGRectMake(0, 0, size.width, size.height);
+  CGFloat radius = [KxMenu cornerRadius];
+  CGFloat minx = CGRectGetMinX(rrect), midx = CGRectGetMidX(rrect), maxx = CGRectGetMaxX(rrect);
+  CGFloat miny = CGRectGetMinY(rrect), midy = CGRectGetMidY(rrect), maxy = CGRectGetMaxY(rrect);
+  
+  CGContextMoveToPoint(context, minx, midy);
+  if(menuItems == 1){
+    CGContextAddArcToPoint(context, minx, miny, midx, miny, radius);
+    CGContextAddArcToPoint(context, maxx, miny, maxx, midy, radius);
+    CGContextAddArcToPoint(context, maxx, maxy, midx, maxy, radius);
+    CGContextAddArcToPoint(context, minx, maxy, minx, midy, radius);
+  } else if(tag == 0){
+    CGContextAddArcToPoint(context, minx, miny, midx, miny, radius);
+    CGContextAddArcToPoint(context, maxx, miny, maxx, midy, radius);
+    CGContextAddLineToPoint(context, maxx, maxy);
+    CGContextAddLineToPoint(context, minx, maxy);
+  } else if (tag == menuItems.count-1){
+    CGContextAddLineToPoint(context, minx, miny);
+    CGContextAddLineToPoint(context, maxx, miny);
+    CGContextAddArcToPoint(context, maxx, maxy, midx, maxy, radius);
+    CGContextAddArcToPoint(context, minx, maxy, minx, midy, radius);
+  } else {
+    CGContextAddLineToPoint(context, minx, miny);
+    CGContextAddLineToPoint(context, maxx, miny);
+    CGContextAddLineToPoint(context, maxx, maxy);
+    CGContextAddLineToPoint(context, minx, maxy);
+  }
+  
+  // Close the path
+  CGContextClosePath(context);
+  // Fill & stroke the path 
+  CGContextDrawPath(context, kCGPathFillStroke);
 
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGGradientRef colorGradient = CGGradientCreateWithColorComponents(colorSpace, components, locations, 2);
-    CGColorSpaceRelease(colorSpace);
-    CGContextDrawLinearGradient(context, colorGradient, (CGPoint){0, 0}, (CGPoint){size.width, 0}, 0);
-    CGGradientRelease(colorGradient);
-
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
+  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return image;
 }
 
 - (void) drawRect:(CGRect)rect
