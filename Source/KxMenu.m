@@ -678,7 +678,7 @@ typedef enum {
   CGFloat miny = CGRectGetMinY(rrect), midy = CGRectGetMidY(rrect), maxy = CGRectGetMaxY(rrect);
   
   CGContextMoveToPoint(context, minx, midy);
-  if(menuItems == 1){
+  if(menuItems.count == 1){
     CGContextAddArcToPoint(context, minx, miny, midx, miny, radius);
     CGContextAddArcToPoint(context, maxx, miny, maxx, midy, radius);
     CGContextAddArcToPoint(context, maxx, maxy, midx, maxy, radius);
