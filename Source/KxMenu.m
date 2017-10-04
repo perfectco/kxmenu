@@ -98,13 +98,46 @@ const CGFloat kArrowSize = 12.f;
     return [[KxMenuItem alloc] init:title
                               image:image
                              target:target
-                             action:action];
+                             action:action
+                                tag:0
+                             subTag:0];
+}
+
++ (instancetype) menuItem:(NSString *) title
+                    image:(UIImage *) image
+                   target:(id)target
+                   action:(SEL) action
+                      tag:(NSInteger) tag
+{
+  return [[KxMenuItem alloc] init:title
+                            image:image
+                           target:target
+                           action:action
+                              tag:tag
+                           subTag:0];
+}
+
++ (instancetype) menuItem:(NSString *) title
+                    image:(UIImage *) image
+                   target:(id)target
+                   action:(SEL) action
+                      tag:(NSInteger) tag
+                   subTag:(NSInteger) subTag
+{
+  return [[KxMenuItem alloc] init:title
+                            image:image
+                           target:target
+                           action:action
+                              tag:tag
+                           subTag:subTag];
 }
 
 - (id) init:(NSString *) title
       image:(UIImage *) image
      target:(id)target
      action:(SEL) action
+        tag:(NSInteger) tag
+     subTag:(NSInteger) subTag
 {
     NSParameterAssert(title.length || image);
 
@@ -115,6 +148,8 @@ const CGFloat kArrowSize = 12.f;
         _image = image;
         _target = target;
         _action = action;
+        _tag = tag;
+        _subTag = subTag;
     }
     return self;
 }

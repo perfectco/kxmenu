@@ -42,12 +42,26 @@
 @property (readwrite, nonatomic) SEL action;
 @property (readwrite, nonatomic, strong) UIColor *foreColor;
 @property (readwrite, nonatomic) NSTextAlignment alignment;
+@property (readwrite, nonatomic) NSInteger tag;
+@property (readwrite, nonatomic) NSInteger subTag;
 
 + (instancetype) menuItem:(NSString *) title
                     image:(UIImage *) image
                    target:(id)target
                    action:(SEL) action;
 
++ (instancetype) menuItem:(NSString *) title
+                    image:(UIImage *) image
+                   target:(id)target
+                   action:(SEL) action
+                      tag:(NSInteger) tag;
+
++ (instancetype) menuItem:(NSString *) title
+                    image:(UIImage *) image
+                   target:(id)target
+                   action:(SEL) action
+                      tag:(NSInteger) tag
+                      subTag:(NSInteger) subTag;
 @end
 
 @interface KxMenu : NSObject
