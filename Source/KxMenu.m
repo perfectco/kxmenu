@@ -46,6 +46,7 @@ const CGFloat kArrowSize = 12.f;
 ////////////////////////////////////////////////////////////////////////////////
 
 @interface KxMenuView : UIView
+-(void) dismissMenu:(BOOL) animated;
 
 @end
 
@@ -76,9 +77,9 @@ const CGFloat kArrowSize = 12.f;
 
 - (void)singleTap:(UITapGestureRecognizer *)recognizer
 {
-    for (UIView *v in self.subviews) {
+    for (KxMenuView *v in self.subviews) {
         if ([v isKindOfClass:[KxMenuView class]] && [v respondsToSelector:@selector(dismissMenu:)]) {
-            [v performSelector:@selector(dismissMenu:) withObject:@(YES)];
+            [v dismissMenu:YES];
         }
     }
 }
