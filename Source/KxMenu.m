@@ -358,7 +358,7 @@ typedef enum {
 - (void)showMenuInView:(UIView *)view
               fromRect:(CGRect)rect
              menuItems:(NSArray *)menuItems
-              onDismiss:(void (^)())dismissBlock
+              onDismiss:(void (^)(void))dismissBlock
 {
   _menuItems = menuItems;
   _dismissBlock = dismissBlock;
@@ -380,7 +380,7 @@ typedef enum {
   
   [UIView animateWithDuration:0.1
                    animations:^(void) {
-                     _dimView.alpha = 0.66;
+                     self->_dimView.alpha = 0.66;
                    } completion:^(BOOL completed) {
                    }];
   
@@ -398,7 +398,7 @@ typedef enum {
                          self.alpha = 1.0f;
                          self.frame = toFrame;
                      } completion:^(BOOL completed) {
-                         _contentView.hidden = NO;
+                         self->_contentView.hidden = NO;
                      }];
 
 }
@@ -409,9 +409,9 @@ typedef enum {
   
   [UIView animateWithDuration:0.1
                    animations:^(void) {
-                     _dimView.alpha = 0.0;
+                     self->_dimView.alpha = 0.0;
                    } completion:^(BOOL completed) {
-                     [_dimView setHidden:YES];
+                     [self->_dimView setHidden:YES];
                    }];
   
   
@@ -972,7 +972,7 @@ static UIColor * gDividerForegroundColor;
 - (void) showMenuInView:(UIView *)view
                fromRect:(CGRect)rect
               menuItems:(NSArray *)menuItems
-              onDismiss:(void (^)())dismissBlock
+              onDismiss:(void (^)(void))dismissBlock
 {
     NSParameterAssert(view);
     NSParameterAssert(menuItems.count);
