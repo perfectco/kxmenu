@@ -488,10 +488,7 @@ typedef enum {
         if (imageSize.width > maxImageWidth)
             maxImageWidth = imageSize.width;
     }
-
-    if (maxImageWidth) {
-        maxImageWidth += kMarginX;
-    }
+    const CGFloat imageMargin = (maxImageWidth) ? kMarginX : 0;
 
     for (KxMenuItem *menuItem in _menuItems) {
 
@@ -499,7 +496,7 @@ typedef enum {
         const CGSize imageSize = menuItem.image.size;
 
         const CGFloat itemHeight = MAX(titleSize.height, imageSize.height) + kMarginY * 2;
-        const CGFloat itemWidth = ((!menuItem.enabled && !menuItem.image) ? titleSize.width : maxImageWidth + titleSize.width) + kMarginX * 4;
+        const CGFloat itemWidth = ((!menuItem.enabled && !menuItem.image) ? titleSize.width : maxImageWidth + imageMargin + titleSize.width) + kMarginX * 4;
 
         if (itemHeight > maxItemHeight)
             maxItemHeight = itemHeight;
@@ -512,8 +509,11 @@ typedef enum {
     maxItemHeight = MAX(maxItemHeight + [KxMenu itemVerticalMargin], kMinMenuItemHeight);
 
     const CGFloat titleX = kMarginX * 2;
-    const CGFloat titleWidth = maxItemWidth - titleX - kMarginX * 2;
-
+    const CGFloat titleWidth = maxItemWidth - titleX - maxImageWidth - imageMargin - kMarginX * 2;
+    // from left to right:
+    // maxItemWidth = kMarginX * 2 + titleWidth + imageMargin + maxImageWidth + kMarginX * 2;
+    // titles are aligned within titleWidth depending on alignment property
+    // images are centered within maxImageWidth;
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectZero];
     contentView.autoresizingMask = UIViewAutoresizingNone;
     contentView.backgroundColor = [UIColor clearColor];
@@ -590,7 +590,7 @@ typedef enum {
             //const CGRect imageFrame = {x, y, maxImageWidth, maxItemHeight - kMarginY * 2};
             const CGSize size = menuItem.image.size;
 
-            CGFloat x = kMarginX + titleWidth + (maxImageWidth - size.width) / 2;
+            CGFloat x = kMarginX*2 + titleWidth + imageMargin + (maxImageWidth - size.width) / 2;
             CGFloat y = kMarginY + (maxItemHeight - size.height) / 2;
             const CGRect imageFrame = {x, y, size.height, size.width};
 
