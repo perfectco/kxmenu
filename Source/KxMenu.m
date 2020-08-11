@@ -550,6 +550,10 @@ typedef enum {
             UIImage *selectedImage = [KxMenuView selectedImage:(CGSize){maxItemWidth, maxItemHeight + 2} menuItems:_menuItems itemTag:itemNum];
             [button setBackgroundImage:selectedImage forState:UIControlStateHighlighted];
             [itemView addSubview:button];
+	
+	  if (@available(iOS 13.4, *)) {
+	      button.pointerInteractionEnabled = YES;
+	  }
         }
 
         if (menuItem.title.length) {
