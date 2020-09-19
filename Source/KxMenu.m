@@ -38,6 +38,7 @@
 
 #import "KxMenu.h"
 #import <QuartzCore/QuartzCore.h>
+#import "UIHacks.h"
 @import CoreGraphics;
 
 const CGFloat kArrowSize = 12.f;
@@ -47,7 +48,7 @@ const CGFloat kArrowSize = 12.f;
 
 @interface KxMenuView : UIView
 -(void) dismissMenu:(BOOL) animated;
-
+@property (nonatomic, assign) NSInteger selectedItem;
 @end
 
 @interface KxMenuOverlay : UIView
@@ -387,19 +388,19 @@ typedef enum {
 
   KxMenuOverlay *overlay = [[KxMenuOverlay alloc] initWithFrame:view.bounds];
   [overlay addSubview:self];
-    [view addSubview:overlay];
+  [view addSubview:overlay];
 
-    _contentView.hidden = YES;
-    const CGRect toFrame = self.frame;
-    self.frame = (CGRect){self.arrowPoint, 1, 1};
-
-    [UIView animateWithDuration:0.1
+  _contentView.hidden = YES;
+  const CGRect toFrame = self.frame;
+  self.frame = (CGRect){self.arrowPoint, 1, 1};
+  [self becomeFirstResponder ];
+  [UIView animateWithDuration:0.1
                      animations:^(void) {
                          self.alpha = 1.0f;
                          self.frame = toFrame;
                      } completion:^(BOOL completed) {
                          self->_contentView.hidden = NO;
-                     }];
+  }];
 
 }
 
@@ -444,20 +445,82 @@ typedef enum {
             [self removeFromSuperview];
         }
     }
+    _selectedItem = -1;
+    [self resignFirstResponder];
     if (_dismissBlock)
       _dismissBlock();
 }
 
-- (void)performAction:(id)sender
+- (BOOL) canBecomeFirstResponder { return YES;}
+
+- (NSArray <UIKeyCommand *> *) keyCommands {
+    NSMutableArray <UIKeyCommand *> * commands = [NSMutableArray new];
+    
+    [commands addObject: [UIHacks parseCommand:@"prev_item_up"      forAction: @selector(moveUp:)]];
+    [commands addObject: [UIHacks parseCommand:@"next_item_down"    forAction:  @selector(moveDown:)]];
+    [commands addObject: [UIHacks parseCommand: @"cancel_cmd"  forAction:  @selector(dismissMenu)]];
+
+    [commands addObject: [UIHacks parseCommand: @"select_cmd"  forAction:  @selector(select:)]];
+
+    return [commands copy];
+}
+
+- (void) moveUp:(id) sender
+{
+    NSInteger nextItem = self.selectedItem -1;
+    if (nextItem < 0) {
+      self.selectedItem = _menuItems.count - 1;
+    } else {
+      self.selectedItem = nextItem;
+    }
+}
+
+- (void) moveDown:(id) sender
+{
+    NSInteger nextItem = self.selectedItem + 1;
+    if (nextItem >= _menuItems.count) {
+      self.selectedItem = 0; //wrap around
+    } else {
+      self.selectedItem = nextItem;
+    }
+}
+
+- (void) select:(id) sender
+{
+    UIButton * button = [self buttonAtIndex:_selectedItem];
+    if (button) [self performAction:button];
+}
+
+- (void) setSelectedItem:(NSInteger)selectedItem {
+    selectedItem = MIN(selectedItem, _menuItems.count-1);
+    if (selectedItem == _selectedItem) return;
+    UIButton * oldButton = [self buttonAtIndex:_selectedItem];
+    [oldButton setHighlighted:NO];
+    
+    if (selectedItem < 0) return;
+    UIButton * newButton = [self buttonAtIndex:selectedItem];
+    [newButton setHighlighted:YES];
+    _selectedItem = selectedItem;
+}
+
+- (void)performAction:(UIButton *) button
 {
   if (_dismissRequested)
     return;
 
     [self dismissMenu:YES];
   
-    UIButton *button = (UIButton *)sender;
     KxMenuItem *menuItem = _menuItems[button.tag];
     [menuItem performAction];
+}
+
+-(UIButton *) buttonAtIndex: (NSInteger) index {
+    if (index < 0 || index >= _contentView.subviews.count) return nil;
+    UIView * itemView = _contentView.subviews[index];
+    if (itemView.subviews.count == 0) return nil;
+    UIButton * button = (UIButton *) itemView.subviews[0];
+    NSAssert(button.tag == index, @"Invalid index for menu");
+    return button;
 }
 
 - (UIView *) mkContentView
@@ -621,7 +684,7 @@ typedef enum {
     }
 
     contentView.frame = (CGRect){0, 0, maxItemWidth, itemY + kMarginY * 2};
-
+    _selectedItem = -1; //none selected before arrow keys used
     return contentView;
 }
 
