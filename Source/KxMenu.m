@@ -38,6 +38,7 @@
 
 #import "KxMenu.h"
 #import <QuartzCore/QuartzCore.h>
+#import "UIHacks.h"
 @import CoreGraphics;
 
 const CGFloat kArrowSize = 12.f;
@@ -46,7 +47,8 @@ const CGFloat kArrowSize = 12.f;
 ////////////////////////////////////////////////////////////////////////////////
 
 @interface KxMenuView : UIView
-
+-(void) dismissMenu:(BOOL) animated;
+@property (nonatomic, assign) NSInteger selectedItem;
 @end
 
 @interface KxMenuOverlay : UIView
@@ -76,9 +78,9 @@ const CGFloat kArrowSize = 12.f;
 
 - (void)singleTap:(UITapGestureRecognizer *)recognizer
 {
-    for (UIView *v in self.subviews) {
+    for (KxMenuView *v in self.subviews) {
         if ([v isKindOfClass:[KxMenuView class]] && [v respondsToSelector:@selector(dismissMenu:)]) {
-            [v performSelector:@selector(dismissMenu:) withObject:@(YES)];
+            [v dismissMenu:YES];
         }
     }
 }
@@ -357,7 +359,7 @@ typedef enum {
 - (void)showMenuInView:(UIView *)view
               fromRect:(CGRect)rect
              menuItems:(NSArray *)menuItems
-              onDismiss:(void (^)())dismissBlock
+              onDismiss:(void (^)(void))dismissBlock
 {
   _menuItems = menuItems;
   _dismissBlock = dismissBlock;
@@ -379,26 +381,26 @@ typedef enum {
   
   [UIView animateWithDuration:0.1
                    animations:^(void) {
-                     _dimView.alpha = 0.66;
+                     self->_dimView.alpha = 0.66;
                    } completion:^(BOOL completed) {
                    }];
   
 
   KxMenuOverlay *overlay = [[KxMenuOverlay alloc] initWithFrame:view.bounds];
   [overlay addSubview:self];
-    [view addSubview:overlay];
+  [view addSubview:overlay];
 
-    _contentView.hidden = YES;
-    const CGRect toFrame = self.frame;
-    self.frame = (CGRect){self.arrowPoint, 1, 1};
-
-    [UIView animateWithDuration:0.1
+  _contentView.hidden = YES;
+  const CGRect toFrame = self.frame;
+  self.frame = (CGRect){self.arrowPoint, 1, 1};
+  [self becomeFirstResponder ];
+  [UIView animateWithDuration:0.1
                      animations:^(void) {
                          self.alpha = 1.0f;
                          self.frame = toFrame;
                      } completion:^(BOOL completed) {
-                         _contentView.hidden = NO;
-                     }];
+                         self->_contentView.hidden = NO;
+  }];
 
 }
 
@@ -408,9 +410,9 @@ typedef enum {
   
   [UIView animateWithDuration:0.1
                    animations:^(void) {
-                     _dimView.alpha = 0.0;
+                     self->_dimView.alpha = 0.0;
                    } completion:^(BOOL completed) {
-                     [_dimView setHidden:YES];
+                     [self->_dimView setHidden:YES];
                    }];
   
   
@@ -443,20 +445,82 @@ typedef enum {
             [self removeFromSuperview];
         }
     }
+    _selectedItem = -1;
+    [self resignFirstResponder];
     if (_dismissBlock)
       _dismissBlock();
 }
 
-- (void)performAction:(id)sender
+- (BOOL) canBecomeFirstResponder { return YES;}
+
+- (NSArray <UIKeyCommand *> *) keyCommands {
+    NSMutableArray <UIKeyCommand *> * commands = [NSMutableArray new];
+    
+    [commands addObject: [UIHacks parseCommand:@"prev_item_up"      forAction: @selector(moveUp:)]];
+    [commands addObject: [UIHacks parseCommand:@"next_item_down"    forAction:  @selector(moveDown:)]];
+    [commands addObject: [UIHacks parseCommand: @"cancel_cmd"  forAction:  @selector(dismissMenu)]];
+
+    [commands addObject: [UIHacks parseCommand: @"select_cmd"  forAction:  @selector(select:)]];
+
+    return [commands copy];
+}
+
+- (void) moveUp:(id) sender
+{
+    NSInteger nextItem = self.selectedItem -1;
+    if (nextItem < 0) {
+      self.selectedItem = _menuItems.count - 1;
+    } else {
+      self.selectedItem = nextItem;
+    }
+}
+
+- (void) moveDown:(id) sender
+{
+    NSInteger nextItem = self.selectedItem + 1;
+    if (nextItem >= _menuItems.count) {
+      self.selectedItem = 0; //wrap around
+    } else {
+      self.selectedItem = nextItem;
+    }
+}
+
+- (void) select:(id) sender
+{
+    UIButton * button = [self buttonAtIndex:_selectedItem];
+    if (button) [self performAction:button];
+}
+
+- (void) setSelectedItem:(NSInteger)selectedItem {
+    selectedItem = MIN(selectedItem, _menuItems.count-1);
+    if (selectedItem == _selectedItem) return;
+    UIButton * oldButton = [self buttonAtIndex:_selectedItem];
+    [oldButton setHighlighted:NO];
+    
+    if (selectedItem < 0) return;
+    UIButton * newButton = [self buttonAtIndex:selectedItem];
+    [newButton setHighlighted:YES];
+    _selectedItem = selectedItem;
+}
+
+- (void)performAction:(UIButton *) button
 {
   if (_dismissRequested)
     return;
 
     [self dismissMenu:YES];
   
-    UIButton *button = (UIButton *)sender;
     KxMenuItem *menuItem = _menuItems[button.tag];
     [menuItem performAction];
+}
+
+-(UIButton *) buttonAtIndex: (NSInteger) index {
+    if (index < 0 || index >= _contentView.subviews.count) return nil;
+    UIView * itemView = _contentView.subviews[index];
+    if (itemView.subviews.count == 0) return nil;
+    UIButton * button = (UIButton *) itemView.subviews[0];
+    NSAssert(button.tag == index, @"Invalid index for menu");
+    return button;
 }
 
 - (UIView *) mkContentView
@@ -487,18 +551,15 @@ typedef enum {
         if (imageSize.width > maxImageWidth)
             maxImageWidth = imageSize.width;
     }
-
-    if (maxImageWidth) {
-        maxImageWidth += kMarginX;
-    }
+    const CGFloat imageMargin = (maxImageWidth) ? kMarginX : 0;
 
     for (KxMenuItem *menuItem in _menuItems) {
 
-        const CGSize titleSize = [menuItem.title sizeWithFont:titleFont];
+        const CGSize titleSize = [menuItem.title sizeWithAttributes:@{NSFontAttributeName: titleFont}];
         const CGSize imageSize = menuItem.image.size;
 
         const CGFloat itemHeight = MAX(titleSize.height, imageSize.height) + kMarginY * 2;
-        const CGFloat itemWidth = ((!menuItem.enabled && !menuItem.image) ? titleSize.width : maxImageWidth + titleSize.width) + kMarginX * 4;
+        const CGFloat itemWidth = ((!menuItem.enabled && !menuItem.image) ? titleSize.width : maxImageWidth + imageMargin + titleSize.width) + kMarginX * 4;
 
         if (itemHeight > maxItemHeight)
             maxItemHeight = itemHeight;
@@ -511,8 +572,11 @@ typedef enum {
     maxItemHeight = MAX(maxItemHeight + [KxMenu itemVerticalMargin], kMinMenuItemHeight);
 
     const CGFloat titleX = kMarginX * 2;
-    const CGFloat titleWidth = maxItemWidth - titleX - kMarginX * 2;
-
+    const CGFloat titleWidth = maxItemWidth - titleX - maxImageWidth - imageMargin - kMarginX * 2;
+    // from left to right:
+    // maxItemWidth = kMarginX * 2 + titleWidth + imageMargin + maxImageWidth + kMarginX * 2;
+    // titles are aligned within titleWidth depending on alignment property
+    // images are centered within maxImageWidth;
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectZero];
     contentView.autoresizingMask = UIViewAutoresizingNone;
     contentView.backgroundColor = [UIColor clearColor];
@@ -549,6 +613,10 @@ typedef enum {
             UIImage *selectedImage = [KxMenuView selectedImage:(CGSize){maxItemWidth, maxItemHeight + 2} menuItems:_menuItems itemTag:itemNum];
             [button setBackgroundImage:selectedImage forState:UIControlStateHighlighted];
             [itemView addSubview:button];
+	
+	  if (@available(iOS 13.4, *)) {
+	      button.pointerInteractionEnabled = YES;
+	  }
         }
 
         if (menuItem.title.length) {
@@ -589,7 +657,7 @@ typedef enum {
             //const CGRect imageFrame = {x, y, maxImageWidth, maxItemHeight - kMarginY * 2};
             const CGSize size = menuItem.image.size;
 
-            CGFloat x = kMarginX + titleWidth + (maxImageWidth - size.width) / 2;
+            CGFloat x = kMarginX*2 + titleWidth + imageMargin + (maxImageWidth - size.width) / 2;
             CGFloat y = kMarginY + (maxItemHeight - size.height) / 2;
             const CGRect imageFrame = {x, y, size.height, size.width};
 
@@ -616,7 +684,7 @@ typedef enum {
     }
 
     contentView.frame = (CGRect){0, 0, maxItemWidth, itemY + kMarginY * 2};
-
+    _selectedItem = -1; //none selected before arrow keys used
     return contentView;
 }
 
@@ -971,7 +1039,7 @@ static UIColor * gDividerForegroundColor;
 - (void) showMenuInView:(UIView *)view
                fromRect:(CGRect)rect
               menuItems:(NSArray *)menuItems
-              onDismiss:(void (^)())dismissBlock
+              onDismiss:(void (^)(void))dismissBlock
 {
     NSParameterAssert(view);
     NSParameterAssert(menuItems.count);
