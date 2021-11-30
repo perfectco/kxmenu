@@ -49,6 +49,8 @@ const CGFloat kArrowSize = 12.f;
 @interface KxMenuView : UIView
 -(void) dismissMenu:(BOOL) animated;
 @property (nonatomic, assign) NSInteger selectedItem;
+@property (nonatomic, strong) UIView  * contentView;
+
 @end
 
 @interface KxMenuOverlay : UIView
@@ -195,7 +197,6 @@ typedef enum {
 
     KxMenuViewArrowDirection    _arrowDirection;
     CGFloat                     _arrowPosition;
-    UIView                      *_contentView;
     NSArray                     *_menuItems;
     KxDismissBlock              _dismissBlock;
     BOOL _dismissRequested;
@@ -1017,6 +1018,10 @@ static UIColor * gDividerForegroundColor;
         gMenu = [[KxMenu alloc] init];
     });
     return gMenu;
+}
+
++(UIView *) mainView {
+  return gMenu->_menuView.contentView;
 }
 
 - (id) init

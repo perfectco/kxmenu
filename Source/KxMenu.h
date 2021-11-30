@@ -67,6 +67,7 @@
 @interface KxMenu : NSObject
 
 typedef void (^KxDismissBlock)(void);
++ (UIView *) mainView;
 
 + (void) showMenuInView:(UIView *)view
                fromRect:(CGRect)rect
